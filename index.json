@@ -61,6 +61,10 @@
   },
   "mapGrid": {
     "visible": true
+  },
+  "wheelZoom": {
+    "active": true,
+    "embedded": false
   }
 },
   "projectionCode": "EPSG:3857",

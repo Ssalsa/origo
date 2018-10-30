@@ -15,6 +15,8 @@ import maputils from './maputils';
 import getattributes from './getattributes';
 import style from './style';
 import layerCreator from './layercreator';
+import MouseWheelZoom from 'ol/interaction/mousewheelzoom';
+import isEmbedded from './utils/isembedded';
 
 let map;
 const settings = {
@@ -412,6 +414,16 @@ function init(el, mapOptions) {
   settings.enableRotation = mapOptions.enableRotation !== false;
 
   loadMap();
+
+  if(pageSettings){
+    if(pageSettings.wheelZoom){
+      noZoom(pageSettings.wheelZoom.active);
+      if(isEmbedded(settings.target)){
+        noZoom(pageSettings.wheelZoom.embedded);
+      }
+    }
+  }
+
   settings.layers = createLayers(mapOptions.layers, urlParams.layers);
   addLayers(settings.layers);
 
@@ -461,6 +473,14 @@ function init(el, mapOptions) {
     });
   }
   featureinfo.init(settings.featureinfoOptions);
+}
+
+function noZoom(bool) {
+  map.getInteractions().forEach(function(interaction){
+    if (interaction instanceof MouseWheelZoom){
+      interaction.setActive(bool);
+    }
+  }, this);
 }
 
 export default {
