@@ -6,6 +6,9 @@ let $closeButton;
 let $mapMenu;
 let $menuButton;
 
+let breakPoint;
+let breakPointSize;
+let map;
 let options;
 let isActive;
 
@@ -14,6 +17,12 @@ function toggleMenu() {
     $mapMenu.removeClass('o-mapmenu-show');
   } else {
     $mapMenu.addClass('o-mapmenu-show');
+  }
+}
+
+function mapClick(){
+  if($mapMenu.hasClass('o-mapmenu-show')&& $('#o-map').width() <= breakPoint[0]){
+    $mapMenu.removeClass('o-mapmenu-show');
   }
 }
 
@@ -32,13 +41,22 @@ function bindUIActions() {
     $closeButton.blur();
     e.preventDefault();
   });
+  if(options){
+    if(options.autoHide){
+      $(map.getViewport()).on("click", function(e){
+        map.forEachFeatureAtPixel(map.getEventPixel(e), function (feature, layer){
+          mapClick();
+        });
+      });
+    }
+  }
 }
 
 function init(opt) {
   options = opt || {};
   isActive = options.isActive || false;
-  const breakPointSize = options.breakPointSize || 'l';
-  const breakPoint = viewer.getBreakPoints(breakPointSize);
+  breakPointSize = options.breakPointSize || 'l';
+  breakPoint = viewer.getBreakPoints(breakPointSize);
 
   const el = utils.createButton({
     text: 'Meny',
@@ -61,6 +79,8 @@ function init(opt) {
 </div>`;
   $('#o-map').append(menuEl);
   $mapMenu = $('#o-mapmenu');
+
+ map = viewer.getMap();
 
   const closeButton = utils.createButton({
     id: 'o-mapmenu-button-close',
